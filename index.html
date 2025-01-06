@@ -4,114 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CI/CD Roadmap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        main {
+            margin: 20px auto;
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        p, li {
+            margin: 10px 0;
+        }
+        ol {
+            margin-left: 20px;
+        }
+        pre {
+            background: #f9f9f9;
+            padding: 10px;
+            border-left: 3px solid #4CAF50;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>CI/CD Roadmap for Netflix Project</h1>
+    <header>
+        <h1>CI/CD Roadmap for Netflix Project</h1>
+    </header>
+    <main>
+        <h2>1. Code Management</h2>
+        <p>Developers write and publish their code to GitHub repositories. Ensure the repositories are structured and follow best practices, including branching strategies (e.g., Gitflow).</p>
 
-    <h2>1. Code Management</h2>
-    <p>Developers write and publish their code to GitHub repositories. Ensure the repositories are structured and follow best practices, including branching strategies (e.g., Gitflow).</p>
+        <h2>2. Continuous Integration (CI)</h2>
 
-    <h2>2. Continuous Integration (CI)</h2>
+        <h3>2.1 Build Automation with Jenkins</h3>
+        <ol>
+            <li>Set up a Jenkins pipeline job connected to the GitHub repository.</li>
+            <li>Configure webhook triggers to start builds automatically on code commits or pull requests.</li>
+            <li>Integrate Maven into the Jenkins pipeline for building the application:
+                <pre>
+                mvn clean install
+                </pre>
+            </li>
+        </ol>
 
-    <h3>2.1 Build Automation with Jenkins</h3>
-    <ol>
-        <li>Set up a Jenkins pipeline job connected to the GitHub repository.</li>
-        <li>Configure webhook triggers to start builds automatically on code commits or pull requests.</li>
-        <li>Integrate Maven into the Jenkins pipeline for building the application:
-            <pre>
-            mvn clean install
-            </pre>
-        </li>
-    </ol>
+        <h3>2.2 Code Quality Analysis with SonarQube</h3>
+        <ol>
+            <li>Integrate SonarQube into the Jenkins pipeline.</li>
+            <li>Add a SonarQube analysis stage using the SonarQube scanner plugin.
+                <pre>
+                mvn sonar:sonar -Dsonar.projectKey=project-key \
+                              -Dsonar.host.url=http://your-sonarqube-server \
+                              -Dsonar.login=your-sonarqube-token
+                </pre>
+            </li>
+            <li>Ensure the pipeline fails if code quality thresholds are not met.</li>
+        </ol>
 
-    <h3>2.2 Code Quality Analysis with SonarQube</h3>
-    <ol>
-        <li>Integrate SonarQube into the Jenkins pipeline.</li>
-        <li>Add a SonarQube analysis stage using the SonarQube scanner plugin.
-            <pre>
-            mvn sonar:sonar -Dsonar.projectKey=project-key \
-                          -Dsonar.host.url=http://your-sonarqube-server \
-                          -Dsonar.login=your-sonarqube-token
-            </pre>
-        </li>
-        <li>Ensure the pipeline fails if code quality thresholds are not met.</li>
-    </ol>
+        <h3>2.3 Security Scanning with Trivy</h3>
+        <ol>
+            <li>Integrate Trivy into the pipeline to scan for vulnerabilities:
+                <pre>
+                trivy fs . --exit-code 1 --severity HIGH,CRITICAL
+                </pre>
+            </li>
+            <li>Ensure the pipeline fails if vulnerabilities exceed acceptable levels.</li>
+        </ol>
 
-    <h3>2.3 Security Scanning with Trivy</h3>
-    <ol>
-        <li>Integrate Trivy into the pipeline to scan for vulnerabilities:
-            <pre>
-            trivy fs . --exit-code 1 --severity HIGH,CRITICAL
-            </pre>
-        </li>
-        <li>Ensure the pipeline fails if vulnerabilities exceed acceptable levels.</li>
-    </ol>
+        <h2>3. Artifact Management</h2>
+        <h3>3.1 Deploy Artifacts to Nexus</h3>
+        <ol>
+            <li>Use Maven to deploy built artifacts to the Nexus server:
+                <pre>
+                mvn deploy
+                </pre>
+            </li>
+            <li>Configure the Nexus repository credentials in Jenkins securely using credentials plugins.</li>
+        </ol>
 
-    <h2>3. Artifact Management</h2>
-    <h3>3.1 Deploy Artifacts to Nexus</h3>
-    <ol>
-        <li>Use Maven to deploy built artifacts to the Nexus server:
-            <pre>
-            mvn deploy
-            </pre>
-        </li>
-        <li>Configure the Nexus repository credentials in Jenkins securely using credentials plugins.</li>
-    </ol>
+        <h2>4. Continuous Deployment (CD)</h2>
 
-    <h2>4. Continuous Deployment (CD)</h2>
+        <h3>4.1 Dockerization</h3>
+        <ol>
+            <li>Create Dockerfiles for the application components.</li>
+            <li>Build Docker images during the pipeline execution:
+                <pre>
+                docker build -t your-docker-image-name .
+                </pre>
+            </li>
+            <li>Push Docker images to Docker Hub:
+                <pre>
+                docker push your-dockerhub-repo/your-docker-image-name
+                </pre>
+            </li>
+        </ol>
 
-    <h3>4.1 Dockerization</h3>
-    <ol>
-        <li>Create Dockerfiles for the application components.</li>
-        <li>Build Docker images during the pipeline execution:
-            <pre>
-            docker build -t your-docker-image-name .
-            </pre>
-        </li>
-        <li>Push Docker images to Docker Hub:
-            <pre>
-            docker push your-dockerhub-repo/your-docker-image-name
-            </pre>
-        </li>
-    </ol>
+        <h3>4.2 Kubernetes Deployment</h3>
+        <ol>
+            <li>Write Kubernetes YAML manifests for deployments, services, and other resources.</li>
+            <li>Use kubectl or Helm to deploy to the Kubernetes cluster:
+                <pre>
+                kubectl apply -f deployment.yaml
+                </pre>
+            </li>
+            <li>Automate deployment using Jenkins pipeline stages.</li>
+        </ol>
 
-    <h3>4.2 Kubernetes Deployment</h3>
-    <ol>
-        <li>Write Kubernetes YAML manifests for deployments, services, and other resources.</li>
-        <li>Use kubectl or Helm to deploy to the Kubernetes cluster:
-            <pre>
-            kubectl apply -f deployment.yaml
-            </pre>
-        </li>
-        <li>Automate deployment using Jenkins pipeline stages.</li>
-    </ol>
+        <h2>5. Monitoring</h2>
 
-    <h2>5. Monitoring</h2>
+        <h3>5.1 AWS CloudWatch</h3>
+        <ol>
+            <li>Integrate AWS CloudWatch for application and infrastructure logs.</li>
+            <li>Set up alerts for critical metrics.</li>
+        </ol>
 
-    <h3>5.1 AWS CloudWatch</h3>
-    <ol>
-        <li>Integrate AWS CloudWatch for application and infrastructure logs.</li>
-        <li>Set up alerts for critical metrics.</li>
-    </ol>
+        <h3>5.2 Prometheus and Grafana</h3>
+        <ol>
+            <li>Configure Prometheus to scrape metrics from the application and Kubernetes cluster.</li>
+            <li>Visualize metrics in Grafana using custom dashboards.</li>
+            <li>Set up Grafana alerts for anomalies.</li>
+        </ol>
 
-    <h3>5.2 Prometheus and Grafana</h3>
-    <ol>
-        <li>Configure Prometheus to scrape metrics from the application and Kubernetes cluster.</li>
-        <li>Visualize metrics in Grafana using custom dashboards.</li>
-        <li>Set up Grafana alerts for anomalies.</li>
-    </ol>
-
-    <h2>6. Pipeline Summary</h2>
-    <p>The complete CI/CD pipeline performs the following steps:</p>
-    <ol>
-        <li>Pull code from GitHub.</li>
-        <li>Build the application using Maven.</li>
-        <li>Perform code quality checks with SonarQube.</li>
-        <li>Scan for vulnerabilities using Trivy.</li>
-        <li>Deploy artifacts to the Nexus repository.</li>
-        <li>Build and push Docker images to Docker Hub.</li>
-        <li>Deploy the application to Kubernetes clusters.</li>
-        <li>Monitor the application and infrastructure using CloudWatch, Prometheus, and Grafana.</li>
-    </ol>
+        <h2>6. Pipeline Summary</h2>
+        <p>The complete CI/CD pipeline performs the following steps:</p>
+        <ol>
+            <li>Pull code from GitHub.</li>
+            <li>Build the application using Maven.</li>
+            <li>Perform code quality checks with SonarQube.</li>
+            <li>Scan for vulnerabilities using Trivy.</li>
+            <li>Deploy artifacts to the Nexus repository.</li>
+            <li>Build and push Docker images to Docker Hub.</li>
+            <li>Deploy the application to Kubernetes clusters.</li>
+            <li>Monitor the application and infrastructure using CloudWatch, Prometheus, and Grafana.</li>
+        </ol>
+    </main>
 </body>
 </html>
